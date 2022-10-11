@@ -1,35 +1,43 @@
-let noiseMachine = new p5.Noise("brown");
-let filter, startButton, stopButton
+let noiseMachine = new p5.Noise();
+let filter, startButton, stopButton, chooseNoise, setVolume, setTuning;
 
 function setup() {
   createCanvas(400, 400);
-  noiseMachine.amp(1);
-  
 
   filter = new p5.LowPass();
   noiseMachine.disconnect();
   noiseMachine.connect(filter);
-  filter.freq(440);
+
   filter.res(0);
 
-  startButton = createButton("start");
-  startButton.mousePressed(() => {
+  chooseNoise = createSelect();
+  chooseNoise.option("brown");
+  chooseNoise.option("white");
+  chooseNoise.option("pink");
+
+  chooseNoise.changed(() => {
+    noiseMachine.setType(chooseNoise.value());
+  });
+
+  setVolume = createSlider(0, 2, 1, 0);
+  setTuning = createSlider(220, 1760, 440, 0);
+
+  setVolume.changed(() => {
+    noiseMachine.amp(setVolume.value());
+  });
+
+  setTuning.changed(() => {
+    filter.freq(setTuning.value());
+  });
+
+  startButton = createButton("start").mousePressed(() => {
     noiseMachine.start();
   });
 
-  stopButton = createButton("stop");
-  stopButton.mousePressed(stopAudioEngine);
-
-  // let people control tuning, volume and resonance
-
-}
-
-
-
-function stopAudioEngine() {
+  stopButton = createButton("stop").mousePressed(() => {
     noiseMachine.stop();
-  //   add fade in ADSR
-  }
+  });
+}
 
 function draw() {
   background(200);
